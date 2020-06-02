@@ -35,7 +35,7 @@ class UFQC_List extends WP_List_Table {
 		global $wpdb;
     $sql = "SELECT * FROM {$wpdb->prefix}".UFQC_TABLE_NAME;
     if(isset($_POST['s'])) {
-      $s = $_POST['s'];
+      $s = sanitize_text_field($_POST['s']);
       $sql .= ' WHERE label like "%'.esc_sql($s).'%" OR label like "%'.esc_sql($s).'%" ';
     }
 		if(!empty( $_REQUEST['orderby'])) {
@@ -94,11 +94,11 @@ class UFQC_List extends WP_List_Table {
 			case 'content':
         return $item[$column_name];
       case 'qr':
-				return '<img src="'.$base64pngstr.$item[$column_name].'" />';
+				return sprintf('<img src="'.$base64pngstr.$item[$column_name].'" />');
 			case 'action':
-				return '<a download="'.$item['label'].'-qr.png" href="'.$base64pngstr.$item['qr'].'">Download</a><br>
+				return sprintf('<a download="'.$item['label'].'-qr.png" href="'.$base64pngstr.$item['qr'].'">Download</a><br>
 				<a class="ufqc-copy-clipboard" href="'.get_page_link(get_page_by_title(UFQC_PAGE)).'?qid='.urlencode($item['qid']).'" >Copy URL</a>
-				';
+				');
 			default:
 				return print_r( $item, true );
 		}
@@ -117,23 +117,6 @@ class UFQC_List extends WP_List_Table {
 		);
 	}
 
-
-	/**
-	 * Method for name column
-	 *
-	 * @param array $item an array of DB data
-	 *
-	 * @return string
-	 */
-	function column_name( $item ) {
-		$delete_nonce = wp_create_nonce( 'ufqc_delete_qr' );
-		$title = '<strong>' . $item['name'] . '</strong>';
-		$actions = [
-			'delete' => sprintf( '<a href="?page=%s&action=%s&QR=%s&_wpnonce=%s">Delete</a>', esc_attr( $_REQUEST['page'] ), 'delete', absint( $item['id'] ), $delete_nonce )
-		];
-		return $title . $this->row_actions( $actions );
-	}
-
 	/**
 	 *  Associative array of columns
 	 *
@@ -141,7 +124,7 @@ class UFQC_List extends WP_List_Table {
 	 */
 	function get_columns() {
 		$columns = [
-			'cb'      => '<input type="checkbox" />',
+			'cb'      => esc_html('<input type="checkbox" />'),
 			'label'    => __( 'Label', 'ufqc' ),
       'content' => __( 'Content', 'ufqc' ),
 			'qr' => __( 'QR', 'ufqc' ),
@@ -170,7 +153,7 @@ class UFQC_List extends WP_List_Table {
 	 */
 	public function get_bulk_actions() {
 		$actions = [
-			'bulk-delete' => 'Delete'
+			'bulk-delete' => __('Delete')
 		];
 		return $actions;
   }

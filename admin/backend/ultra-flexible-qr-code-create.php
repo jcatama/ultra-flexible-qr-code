@@ -34,8 +34,8 @@ class UFQC_Create {
       $charset_collate = $wpdb->get_charset_collate();
       $ufcq_table = $wpdb->prefix . UFQC_TABLE_NAME;
 
-      $ufcqlabel = trim($_POST['ufqc_label']);
-      $ufcqlabelcontent = trim($_POST['ufqc_content']);
+      $ufcqlabel = sanitize_text_field($_POST['ufqc_label']);
+      $ufcqlabelcontent = sanitize_text_field($_POST['ufqc_content']);
 
       try {
         $wpdb->insert($ufcq_table, array(

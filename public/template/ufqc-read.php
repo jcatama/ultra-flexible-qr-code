@@ -18,7 +18,7 @@ if(!isset($_GET['qid'])) {
 	exit;
 }
 
-$qid = $_GET['qid'];
+$qid = sanitize_text_field($_GET['qid']);
 
 global $wpdb;
 $charset_collate = $wpdb->get_charset_collate();
