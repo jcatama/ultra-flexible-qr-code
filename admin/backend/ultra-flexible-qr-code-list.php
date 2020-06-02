@@ -38,8 +38,8 @@ class UFQC_List extends WP_List_Table {
       $s = sanitize_text_field($_POST['s']);
       $sql .= ' WHERE label like "%'.esc_sql($s).'%" OR label like "%'.esc_sql($s).'%" ';
     }
-		if(!empty( $_REQUEST['orderby'])) {
-			$sql .= ' ORDER BY ' . esc_sql( $_REQUEST['orderby'] );
+		if(!empty($_REQUEST['orderby'])) {
+			$sql .= ' ORDER BY ' . esc_sql($_REQUEST['orderby']);
 			$sql .= ! empty($_REQUEST['order']) ? ' ' . esc_sql($_REQUEST['order']) : ' ASC';
 		}
 		$sql .= " LIMIT $per_page";
@@ -124,7 +124,7 @@ class UFQC_List extends WP_List_Table {
 	 */
 	function get_columns() {
 		$columns = [
-			'cb'      => esc_html('<input type="checkbox" />'),
+			'cb'      => '<input type="checkbox" />',
 			'label'    => __( 'Label', 'ufqc' ),
       'content' => __( 'Content', 'ufqc' ),
 			'qr' => __( 'QR', 'ufqc' ),
@@ -175,12 +175,13 @@ class UFQC_List extends WP_List_Table {
 	}
 
 	public function process_bulk_action() {
-		if('delete' === $this->current_action()) {
-			$nonce = esc_attr( $_REQUEST['_wpnonce'] );
+		if(isset($_GET['QR']) && 'delete' === $this->current_action()) {
+			$nonce = esc_attr($_REQUEST['_wpnonce']);
 			if(!wp_verify_nonce($nonce, 'ufqc_delete_qr')) {
 				die('Action is not allowed!');
 			} else {
-				self::delete_qr(absint($_GET['QR']));
+				$qrid = sanitize_text_field($_GET['QR']);
+				self::delete_qr(absint($qrid));
 				wp_redirect(admin_url('admin.php?page='.UFQC_MENU_SLUG));
 				exit;
 			}
